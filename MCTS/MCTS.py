@@ -3,6 +3,7 @@ from copy import deepcopy
 from index_dict import *
 dict = IndexDictionary()
 from threading import Thread
+from move_cache import *
 BLACK  = 1
 WHITE  = 2 
 BLACK_KING =3
@@ -29,10 +30,12 @@ class State:
     self.which_player = which 
     self.no_more_moves = True
     self.over = False
+    self.cache = MoveCache()
     self.possible_actions  = []
     self.feasible_list = []
     self.feasible_count = -1
     self.generateActions()
+    
   '''
   Returns 1 for maximizer, -1 for minimizer
   Required by mcts library
@@ -41,6 +44,16 @@ class State:
     return self.is_current_player
 
   def generateActions(self):
+    # first check if this state is already in the cache
+    stored_moves = self.cache.retrieve_moves(self.which_player, self.board)
+    if stored_moves != -1:
+        print("mcts.py: cached collection of moves identified")
+        # update feasible count so terminal state can be identified
+        self.feasible_count = len(stored_moves)
+        self.possible_actions = stored_moves
+        # exit before calculating, we already have moves calculated
+        return 
+
     self.feasible_count = 0 # determine whether the player could actually move
     # iterate through every location in the board
     for i in range(len(self.board)):
@@ -64,6 +77,8 @@ class State:
   Required by mcts library
   '''
   def getPossibleActions(self):
+    #write possible actions to cache before returning
+    self.cache.write_moves(self.which_player,self.board, self.possible_actions)
     return self.possible_actions
 
 
@@ -189,8 +204,8 @@ class State:
   Currently just collects a count of piece types. 
   '''
   def getReward(self):
-    sum_b = self.board.count(BLACK) + self.board.count(BLACK_KING) 
-    sum_w = self.board.count(WHITE) + self.board.count(WHITE_KING)
+    sum_b = self.board.count(BLACK) + (self.board.count(BLACK_KING)*2) 
+    sum_w = self.board.count(WHITE) + (self.board.count(WHITE_KING) *2)
     if(self.which_player == BLACK):
       return sum_b - sum_w
     if(self.which_player == WHITE):

@@ -11,8 +11,8 @@ from debugger_board import *
        Using max default
  @return array that was considered the best action or -1 if terminal state reached
 '''
-def run_mcts(board , whos_turn = WHITE ,current_player=1,time_limit=5000):
-  searcher = mcts(timeLimit=time_limit)
+def run_mcts(board , whos_turn = WHITE ,current_player=1,iter_limit=1500):
+  searcher = mcts(iterationLimit=iter_limit)
   s = State(which =whos_turn,current_player=current_player,board=board )
   if(s.isTerminal()):
     print("Terminal state reached.")

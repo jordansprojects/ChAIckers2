@@ -78,7 +78,8 @@ class State:
   '''
   def getPossibleActions(self):
     #write possible actions to cache before returning
-    self.cache.write_moves(self.which_player,self.board, self.possible_actions)
+    if self.cache.retrieve_moves(self.which_player,self.board) != -1:
+        self.cache.write_moves(self.which_player,self.board, self.possible_actions)
     return self.possible_actions
 
 
@@ -92,21 +93,42 @@ class State:
       if self.is_viable_hop(i,i+moves[0],i+moves[2]) or self.is_viable_hop(i,i+moves[1],i+moves[3]) or self.is_viable_hop(i,i+moves[5],i+moves[7]) or self.is_viable_hop(i,i+moves[4], i+moves[6]):
         return True
       return False # no legal move was found so no legal move exists
-      
+     
+  
+  # thread wrapper function to remove overhead from lambda expresion
+  def perform_hop_wrapper(self,index,a,b):
+    self.perform_hop(index, a,b,self.board)
+
+  # thread wrapper function to remove overhead from lambda expresion
+  def perform_placement_wrapper(self,index,a):
+    self.perform_placement(index, a)
+
+
+
 
   def init_moves(self,index,piece_val):
     moveset = dict.get(index,piece_val)
     # create threads for each hop
     threads = []
-    threads.append(Thread(target=lambda: self.perform_hop(index,index+moveset[0],index+moveset[2],self.board)))
-    threads.append(Thread(target=lambda: self.perform_hop(index,index+moveset[1],index+moveset[3],self.board)))
-    threads.append(Thread(target=lambda: self.perform_hop(index,index+moveset[4],index+moveset[6],self.board)))
-    threads.append(Thread(target=lambda: self.perform_hop(index,index+moveset[5],index+moveset[7],self.board)))
 
-    threads.append(Thread(target=lambda:self.perform_placement(index,index+moveset[0])))
-    threads.append(Thread(target=lambda:self.perform_placement(index,index+moveset[1])))
-    threads.append(Thread(target=lambda:self.perform_placement(index,index+moveset[4])))
-    threads.append(Thread(target=lambda:self.perform_placement(index,index+moveset[5])))
+    threads.append(Thread(target=self.perform_hop_wrapper, args=(index,index+moveset[0],index+moveset[2])))
+    threads.append(Thread(target=self.perform_hop_wrapper, args=(index,index+moveset[1],index+moveset[3])))
+    threads.append(Thread(target=self.perform_hop_wrapper, args=(index,index+moveset[4],index+moveset[6])))
+    threads.append(Thread(target=self.perform_hop_wrapper, args=(index,index+moveset[5],index+moveset[7])))
+
+    #threads.append(Thread(target=lambda: self.perform_hop(index,index+moveset[0],index+moveset[2],self.board)))
+    #threads.append(Thread(target=lambda: self.perform_hop(index,index+moveset[1],index+moveset[3],self.board)))
+    #threads.append(Thread(target=lambda: self.perform_hop(index,index+moveset[4],index+moveset[6],self.board)))
+    #threads.append(Thread(target=lambda: self.perform_hop(index,index+moveset[5],index+moveset[7],self.board)))
+
+    #threads.append(Thread(target=lambda:self.perform_placement(index,index+moveset[0])))
+    #threads.append(Thread(target=lambda:self.perform_placement(index,index+moveset[1])))
+    #threads.append(Thread(target=lambda:self.perform_placement(index,index+moveset[4])))
+    #threads.append(Thread(target=lambda:self.perform_placement(index,index+moveset[5])))
+  
+    for i in [0,1,4,5]:
+        threads.append(Thread(target=self.perform_placement_wrapper(index,index+moveset[i])))
+
     for thread in threads:
       thread.start()
     for thread in threads:
@@ -367,7 +389,7 @@ class Action():
         return True
 
     def __hash__(self):
-        return hash((frozenset(self.board), self.player))
+        return hash((tuple(self.board), self.player))
 
 def print_board_nicely(board: list[int]):
   str_board = "\n"

@@ -55,5 +55,20 @@ def play_against_self():
     sys.exit(app.exec_())
 
 
+
+'''
+    Alternates between black and white,
+    finds best move for each player. That
+    becomes the new state to find the best move from 
+'''
+def play_against_self_console():
+    b= STARTING_BOARD
+    who = BLACK
+    while( True and b != -1):
+        print_board_nicely(b)
+        b = run_mcts(board=b, whos_turn=who)
+        who = BLACK if who == WHITE else WHITE
+
+
 if __name__ == '__main__':
-    play_against_self()
+    play_against_self_console()

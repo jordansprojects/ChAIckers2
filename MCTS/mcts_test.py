@@ -11,8 +11,8 @@ from debugger_board import *
        Using max default
  @return array that was considered the best action or -1 if terminal state reached
 '''
-def run_mcts(board , whos_turn = WHITE ,current_player=1,iter_limit=1500):
-  searcher = mcts(iterationLimit=iter_limit)
+def run_mcts(board , whos_turn = WHITE ,current_player=1,time_limit=2500):
+  searcher = mcts(timeLimit=time_limit)
   s = State(which =whos_turn,current_player=current_player,board=board )
   if(s.isTerminal()):
     print("Terminal state reached.")
@@ -45,13 +45,16 @@ def play_against_self():
     board_widget.draw_pieces_on_board(STARTING_BOARD)
     b= STARTING_BOARD
     who = BLACK
+    i = 0
     while( True and b != -1):
+        print("turn #" , i)
         board_widget.draw_pieces_on_board(b)
         board_widget.repaint()
         app.processEvents()
         print_board_nicely(b)
         b = run_mcts(board=b, whos_turn=who)
         who = BLACK if who == WHITE else WHITE
+        i = i +0.5
     sys.exit(app.exec_())
 
 
@@ -71,4 +74,4 @@ def play_against_self_console():
 
 
 if __name__ == '__main__':
-    play_against_self_console()
+    play_against_self()

@@ -77,8 +77,8 @@ class State:
   Required by mcts library
   '''
   def getPossibleActions(self):
-    #write possible actions to cache before returning
-    if self.cache.retrieve_moves(self.which_player,self.board) != -1:
+    #write possible actions to cache before returning, if entry does not exist
+    if self.cache.retrieve_moves(self.which_player,self.board) == -1:
         self.cache.write_moves(self.which_player,self.board, self.possible_actions)
     return self.possible_actions
 
@@ -104,39 +104,37 @@ class State:
     self.perform_placement(index, a)
 
 
-
-
   def init_moves(self,index,piece_val):
     moveset = dict.get(index,piece_val)
     # create threads for each hop
-    threads = []
+    hop_threads = []
 
-    threads.append(Thread(target=self.perform_hop_wrapper, args=(index,index+moveset[0],index+moveset[2])))
-    threads.append(Thread(target=self.perform_hop_wrapper, args=(index,index+moveset[1],index+moveset[3])))
-    threads.append(Thread(target=self.perform_hop_wrapper, args=(index,index+moveset[4],index+moveset[6])))
-    threads.append(Thread(target=self.perform_hop_wrapper, args=(index,index+moveset[5],index+moveset[7])))
+    hop_threads.append(Thread(target=self.perform_hop_wrapper, args=(index,index+moveset[0],index+moveset[2])))
+    hop_threads.append(Thread(target=self.perform_hop_wrapper, args=(index,index+moveset[1],index+moveset[3])))
+    hop_threads.append(Thread(target=self.perform_hop_wrapper, args=(index,index+moveset[4],index+moveset[6])))
+    hop_threads.append(Thread(target=self.perform_hop_wrapper, args=(index,index+moveset[5],index+moveset[7])))
 
-    #threads.append(Thread(target=lambda: self.perform_hop(index,index+moveset[0],index+moveset[2],self.board)))
-    #threads.append(Thread(target=lambda: self.perform_hop(index,index+moveset[1],index+moveset[3],self.board)))
-    #threads.append(Thread(target=lambda: self.perform_hop(index,index+moveset[4],index+moveset[6],self.board)))
-    #threads.append(Thread(target=lambda: self.perform_hop(index,index+moveset[5],index+moveset[7],self.board)))
-
-    #threads.append(Thread(target=lambda:self.perform_placement(index,index+moveset[0])))
-    #threads.append(Thread(target=lambda:self.perform_placement(index,index+moveset[1])))
-    #threads.append(Thread(target=lambda:self.perform_placement(index,index+moveset[4])))
-    #threads.append(Thread(target=lambda:self.perform_placement(index,index+moveset[5])))
-  
-    for i in [0,1,4,5]:
-        threads.append(Thread(target=self.perform_placement_wrapper(index,index+moveset[i])))
-
-    for thread in threads:
+    # first run hop threads 
+    for thread in hop_threads:
       thread.start()
-    for thread in threads:
+    for thread in hop_threads:
       thread.join()
-      
-    # [+left move, +right move, +left hop, +right hop, -left move, -right move, -left hop, -right hop]
-    # [0,                1           2         3          4            5           6          7]
-    
+
+    # check if the list is nonempty before initiating placement threads, so that only taking moves are considered 
+    if (len(self.getPossibleActions()) != 0):
+        return
+
+    placement_threads =[]
+    for i in [0,1,4,5]:
+        placement_threads.append(Thread(target=self.perform_placement_wrapper(index,index+moveset[i])))
+   
+   # now run placement threads 
+    for thread in placement_threads:
+      thread.start()
+    for thread in placement_threads:
+      thread.join()
+
+
   '''
   Returns the state which results from taking action action
   Required by mcts library
@@ -219,19 +217,22 @@ class State:
     #if all previous conditions are false, the game is still on! 
     else:
       return False
-  
+
   '''
   Returns the reward for this state. Only needed for terminal states.
   Required by mcts library
-  Currently just collects a count of piece types. 
   '''
   def getReward(self):
-    sum_b = self.board.count(BLACK) + (self.board.count(BLACK_KING)*2) 
-    sum_w = self.board.count(WHITE) + (self.board.count(WHITE_KING) *2)
-    if(self.which_player == BLACK):
-      return sum_b - sum_w
-    if(self.which_player == WHITE):
-      return sum_w - sum_b
+    sum_b = self.board.count(BLACK) + (self.board.count(BLACK_KING)) 
+    sum_w = self.board.count(WHITE) + (self.board.count(WHITE_KING) )
+    if(self.which_player == BLACK and sum_w == 0):
+        return 1
+    elif(self.which_player == WHITE and sum_b == 0):
+        return 1
+    else: #no reward unless game is won
+      return 0
+
+    
 
   '''
   Returns whether a checker piece has reached a kinging zone 
@@ -343,7 +344,9 @@ class State:
   Accepts old index and new index
   '''
   def add_action(self,board):
-      self.possible_actions.append(Action(player=self.getCurrentPlayer(),board_state=board))
+      # only add an action if its unique from current board; this shouldnt be possible 
+      if(board != self.board):
+          self.possible_actions.append(Action(player=self.getCurrentPlayer(),board_state=board))
       return self.possible_actions
       
   '''

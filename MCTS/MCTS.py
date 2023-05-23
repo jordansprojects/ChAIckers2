@@ -1,4 +1,5 @@
-from mcts_lib import *
+#from mcts_lib import *
+from mcts import *
 from copy import deepcopy
 from index_dict import *
 dict = IndexDictionary()
@@ -51,6 +52,8 @@ class State:
         # update feasible count so terminal state can be identified
         self.feasible_count = len(stored_moves)
         self.possible_actions = stored_moves
+        print_board_nicely(self.board)
+        print(stored_moves)
         # exit before calculating, we already have moves calculated
         return 
 

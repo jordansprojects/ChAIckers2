@@ -1,7 +1,8 @@
 
 '''
 Stores legal moves for each index on a checkerboard  following the ID implementation
-  
+TO-DO : rework this to remove addiction computed 
+
 '''
 
 # "ODD" vs "EVEN" row indicies are relevant as they determine  rules in terms of movement 

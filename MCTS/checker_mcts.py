@@ -23,3 +23,5 @@ STARTING_BOARD =  np.array( [1,1,1,1,     # 0  1  2  3
                              2,2,2,2,     # 24 25 26 27
                              2,2,2,2])    # 28 29 30 31
 
+reshaped = STARTING_BOARD.reshape(8,4)
+print(reshaped)

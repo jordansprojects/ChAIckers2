@@ -1,6 +1,4 @@
-# ChAIckers2
-Checker Playing AI using Deep Learning
-------------------------------------------
+# ChAIckers2: Checker Playing AI using Deep Learning
 
 ## Notable changes made since CS478 Project :
 ### MTCS:
@@ -9,4 +7,4 @@ Checker Playing AI using Deep Learning
   * GUI debugger for easier error checking  
    ![myboard_checkers (4)](https://github.com/jordansprojects/ChAIckers2/assets/54329371/8512ecb7-2138-4754-a607-bc324759b6d7)
    
-  * Index system is reworked so that valid checker indicies from a given position are computed beforehand, so that minimal computations are done during the move generation phase.
+  * Index system reworked so that valid checker indicies from a given position are computed beforehand, so that minimal computations are done during the move generation phase.

@@ -2,8 +2,8 @@
 Checker Playing AI using Deep Learning
 ------------------------------------------
 
-### Notable changes made since CS478 Project :
-## MTCS:
+## Notable changes made since CS478 Project :
+### MTCS:
   * Checker states are represented with Numpy Array (as opposed to int lists) for better time and space complexity
   * Caching system to save time re-computing possible moves for a given state
   * GUI debugger for easier error checking  

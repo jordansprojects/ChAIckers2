@@ -1,3 +1,9 @@
+'''
+ The plan is to remove this file once it has been adequately replaced
+
+'''
+
+
 #from mcts_lib import *
 from mcts import *
 from copy import deepcopy

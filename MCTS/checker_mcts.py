@@ -73,6 +73,26 @@ class State:
         return self.possible_actions
 
 
+    '''
+    @param end: location to move piece  
+    @return true or false, indicating whether a piece can be placed at the location
+    '''
+    def can_place(self, end):
+        return (self.board[end] == 0)
+
+    '''
+    @param start : index of the piece to move
+    @param end: index of the location to move the piece
+    '''
+    def perform_placement(self, start,end):
+        new_board = deepcopy(self.board)
+        # store piece value 
+        value = new_board[start]
+        # pick up piece, leaving old location empty
+        new_board[start] = 0
+        # place in new location
+        new_board[end] = value
 
 
+   
 

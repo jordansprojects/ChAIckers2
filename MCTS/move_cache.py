@@ -12,17 +12,17 @@ class MoveCache:
         self.best_for_white ={}
 
     def write_moves(self, who,given,moves):
+        index = hash(given.tobytes())
         if who == 1:
-           self.black[tuple(given)] = (tuple(moves))
+           self.black[index] = moves
         else:
-            self.white[tuple(given)]= (tuple(moves))
+            self.white[index]= moves
 
     def retrieve_moves(self,who,given):
+        index = hash(given.tobytes())
         if who ==1:
-            moves = self.black.get(tuple(given),-1)
+            moves = self.black.get(index,-1)
         else:
-           moves = self.white.get(tuple(given),-1)
-        if( moves != -1):
-            moves = list(moves)
+           moves = self.white.get(index,-1)
         return moves
 

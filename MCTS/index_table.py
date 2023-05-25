@@ -1,4 +1,3 @@
-`
 '''
 Stores legal moves for each index on a checkerboard  following the ID implementation
 TO-DO : rework this to remove addiction computed 
@@ -39,7 +38,7 @@ class IndexTable:
   Retrieves list of moves for a provided piece value and index
   @return a list of integers, each a potential valid move index 
   '''
-  def get_steps(self,value,index):
+  def get_steps(self,index,value):
       if( value == BLACK):
           return self.black_steps[index]
       elif(value == WHITE):
@@ -51,7 +50,7 @@ class IndexTable:
   Retrieves hop list for a provided piece value and index 
   @return a list of tuples in the format (hopped_over, hopped_to)
   '''
-  def get_hops(self,value,index):
+  def get_hops(self,index,value):
       if( value == BLACK):
           return self.black_hops[index]
       elif(value == WHITE):

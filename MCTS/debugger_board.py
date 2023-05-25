@@ -12,8 +12,8 @@ class CheckerBoardWidget(QMainWindow):
         canvas = QPixmap(400,400)
         self.label.setPixmap(canvas)
         self.setCentralWidget(self.label)
-        self.draw_checkerboard()
         self.init_boardinates()
+        self.draw_checkerboard()
 
 
 
@@ -57,7 +57,11 @@ class CheckerBoardWidget(QMainWindow):
                 #Set square color based on positon
                 color = QColor(255,255,255) if (row + col) % 2 == 0 else QColor(159,43,104);
                 qp.fillRect(x,y,square_size,square_size,color)
+
         qp.end()
+        # draw numbers to board
+        self.draw_numbers()
+
 
 
     '''images from OpenGameArt.org
@@ -76,6 +80,16 @@ class CheckerBoardWidget(QMainWindow):
             else:
                 print("debugger_board.py: Image failed to load.")
         print("sprites loaded")
+
+    def draw_numbers(self):
+        qp = QPainter(self.label.pixmap())
+        for location in range(32):
+            # retrieve GUI coordinates for the location
+            x = self.boardinates[location][0]
+            y = self.boardinates[location][1]
+            # draw text to board
+            qp.drawText(x,y,str(location))
+        qp.end() 
 
     def draw_pieces_on_board(self,board_state: list[int]):
         # first paint over previous board

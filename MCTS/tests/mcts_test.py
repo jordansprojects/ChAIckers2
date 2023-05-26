@@ -1,5 +1,7 @@
 # mcts_test.py - tester file for mcts 
-
+import os, sys
+import unittest
+sys.path.append(os.getcwd() + '/..')
 from checker_mcts import *
 from debugger_board import *
 

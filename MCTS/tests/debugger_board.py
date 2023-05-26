@@ -3,7 +3,6 @@
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QLabel
 from PyQt5.QtGui import QPainter, QColor, QBrush, QPixmap,QImage
 from PyQt5.QtCore import Qt
-import sys
 
 class CheckerBoardWidget(QMainWindow):
     def __init__(self):
@@ -71,7 +70,7 @@ class CheckerBoardWidget(QMainWindow):
     '''
     def get_piece_sprites(self):
         self.pieces = []
-        path = "images/c"
+        path = "../images/c"
         for i in range(1,5):
             image = QImage()
             img_path = path + str(i) + ".png"

@@ -1,4 +1,14 @@
+import unittest
+import sys
+import os
+
+
+sys.path.append(os.getcwd() + '/..')
 from index_table import *
+
+
+
+
 table = IndexTable()
 print("TESTING FOR BLACK:")
 for location in range (32):
